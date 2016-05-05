@@ -1,0 +1,51 @@
+<h1>Stocks#list</h1>
+<p>Find me in app/views/stocks/list.html.erb</p>
+<%= select_tag(:stock_options, options_for_select( stock_list,"none" ) ) %>
+<%= @message %>
+<script type="text/javascript" charset='utf-8'>
+$('#stock_options')[0].value="none"
+$('#stock_options').change(function(){
+  data = {'stock' : $( "#stock_options option:selected")[0].value};
+  console.log(data['stock'])
+  if(data['stock'] === 'none'){
+    alert('Please select one stock from the dropdown');
+  }else{
+    $.ajax({
+      url: "/stocks/get_info",
+      type: "GET",
+      data: data,
+      error: function(response){
+              alert("Oops! an error occurred. please try again and select a stock symbol");
+      },
+      success: function(data, textStatus, jqXHR) {
+          new Highcharts.Chart({
+          chart: {
+                renderTo: "stock-chart"
+          },
+          title:{
+                text: "Stock Information of " + $( "#stock_options option:selected")[0].text
+          },
+          xAxis:{
+                type: "datetime"
+          },
+          yAxis:{
+                text: "Dollars"
+          },
+          tooltip:{
+            formatter: function(){
+              return Highcharts.dateFormat("%B %e, %Y", this.x) + '   $' +Highcharts.numberFormat(this.y,2);    
+            }
+          },
+          series:[{
+            pointInterval: <%= 1.day * 1000 %>,
+            pointStart: <%= 30.days.ago.to_i * 1000 %>,
+            data: data["price"]
+          }
+          ]
+        });
+      }
+  })
+}
+});
+</script>
+<div id="stock-chart" style="width:560px;height:300px"><div>
