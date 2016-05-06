@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   get 'stocks/list'
   get 'stocks/get_info', to: 'stocks#show'
+  get 'stocks/list_from_db'
+  get 'stocks/get_info_from_db', to: 'stocks#show_from_db'
+
+  post 'stocks/load_db'
+  post 'stocks/empty_db'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -11,4 +11,37 @@ class StocksController < ApplicationController
   	#Rails.logger.info "====data==#{data}=="
   	render :json => {price: data}
   end
+
+  def list_from_db
+    @message = "Hello, how are you today?(Stocks are from the Local Stocks DB...)"
+  end
+
+  def show_from_db
+    data = {}
+    dates = []
+    close_prices =[]
+    open_prices=[]
+    data[:stock] = params[:stock].to_s
+    stocks = Stock.where(ticker: data[:stock])
+    stocks.each do |stock|
+       dates.push(stock.trade_date)
+       close_prices.push(stock.close_price.to_f)
+       open_prices.push(stock.open_price.to_f)
+    end
+    data[:dates] = dates
+    data[:close_prices] = close_prices
+    data[:open_prices] = open_prices
+
+    render :json => {data: data}
+  end
+
+  def load_db
+    render :json => Stock.populate_db
+  end
+
+  def empty_db
+    render :json => Stock.clear_db
+  end
+
+
 end
