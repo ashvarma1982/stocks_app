@@ -16,25 +16,6 @@ class StocksController < ApplicationController
     @message = "Hello, how are you today?"
   end
 
-  def show_from_db
-    data = {}
-    dates = []
-    close_prices =[]
-    open_prices=[]
-    data[:stock] = params[:stock].to_s
-    stocks = Stock.where(ticker: data[:stock])
-    stocks.each do |stock|
-       dates.push(stock.trade_date)
-       close_prices.push(stock.close_price.to_f)
-       open_prices.push(stock.open_price.to_f)
-    end
-    data[:dates] = dates
-    data[:close_prices] = close_prices
-    data[:open_prices] = open_prices
-
-    render :json => {data: data}
-  end
-
   def add_or_get_stock_item
 
     data = {}
@@ -72,15 +53,6 @@ class StocksController < ApplicationController
     data[:open_prices] = open_prices
     Rails.logger.info "data====#{data}====="
     render :json => {data: data}
-  end
-
-
-  def load_db
-    render :json => Stock.populate_db
-  end
-
-  def empty_db
-    render :json => Stock.clear_db
   end
 
 
