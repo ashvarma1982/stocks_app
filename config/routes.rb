@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   get 'stocks/list_from_db'
   get 'stocks/get_info_from_db', to: 'stocks#show_from_db'
 
+  post '/stocks/add_or_get_stock_item'
+  
   post 'stocks/load_db'
   post 'stocks/empty_db'
 

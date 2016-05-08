@@ -1,32 +1,31 @@
- <h1>Stocks#list_from_db</h1>
+<h1>Stocks#list_from_db</h1>
 <p>Find me in app/views/stocks/list_from_db.html.erb</p>
 
-<%= button_to "Load the DataBase", { :controller => :stocks, :action=> :load_db}, { :remote => true, :id => 'load_db' } %>
-
- <%= select_tag(:stock_options_db, options_for_select( stock_list_db,"none" ) ) %> 
- <%= @message %>
+<%= select_tag(:stock_options_db, options_for_select( stock_list_db,"none" ) ) %>
+<button id="show-chart" type="button" class="green inline with-icon">
+        Show Stock Info. Chart
+</button>
+<%= @message %>
 <script type="text/javascript" charset='utf-8'>
-
 $('#stock_options_db')[0].value="none"
-$('#stock_options_db').change(function(){
-  data = {'stock' : $( "#stock_options_db option:selected")[0].value};
-  
-  if(data['stock'] === 'none'){
+$('#show-chart').click(function(){
+   data = {'stock' : $( "#stock_options_db option:selected")[0].value};
+   if(data['stock'] === 'none'){
     alert('Please select one stock from the dropdown');
   }else{
-    $.ajax({
-      url: "/stocks/get_info_from_db",
-      type: "GET",
+      $.ajax({
+      url: "/stocks/add_or_get_stock_item",
+      type: "POST",
       data: data,
       error: function(response){
-              alert("Oops! an error occurred. please try again and select a stock symbol");
+          alert("Oops! an error occurred. please try again.");
       },
       success: function(data, textStatus, jqXHR) {
    
-         new Highcharts.Chart({
-          chart: {
+        new Highcharts.Chart({
+        chart: {
                 renderTo: "#container"
-          },
+        },
         title: {
             text: 'Stock Price of ' + $( "#stock_options_db option:selected")[0].text,
             x: -20 //center
@@ -48,9 +47,6 @@ $('#stock_options_db').change(function(){
                 color: '#808080'
             }]
         },
-        tooltip: {
-            valueSuffix: '°C'
-        },
         legend: {
             layout: 'vertical',
             align: 'right',
@@ -67,11 +63,10 @@ $('#stock_options_db').change(function(){
     });
       }
   })
+  }
 
-
-
-}
 });
+
  </script>
 
  <div id="#container" style="width:560px;height:300px"></div>
