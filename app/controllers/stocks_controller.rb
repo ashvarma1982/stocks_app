@@ -55,5 +55,27 @@ class StocksController < ApplicationController
     render :json => {data: data}
   end
 
+  def add_dummy_stock_item
+
+    # This method adds a dummy stock item to the DB with open price as 10$ and close price as 20$
+    data = {}
+    data[:stock] = params[:stock].to_s
+    date = Date.today + rand(10)
+    new_stock = Stock.new(ticker: data[:stock],name: Stock::STOCKS_MAP[data[:stock]],trade_date: date, open_price: 10.00, close_price: 20.00)
+    new_stock.save
+    if new_stock.save
+      data[:success] = true
+      data[:date] = date
+      data[:open_price] = new_stock.open_price.to_f
+      data[:close_price] = new_stock.close_price.to_f
+    else
+      data = {success: false, :messages => new_stock.errors.inspect}
+   end
+   Rails.logger.info "data====#{data}====="
+   render :json => {data: data}
+  end
+   
+
+
 
 end

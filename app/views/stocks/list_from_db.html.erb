@@ -5,8 +5,16 @@
 <button id="show-chart" type="button" class="green inline with-icon">
         Show Stock Info. Chart
 </button>
+
+<button id="add-info" type="button" class="green inline with-icon">
+        Add  Dummy Stock to DB
+</button>
+
 <%= @message %>
 <script type="text/javascript" charset='utf-8'>
+ var chart1;
+$(document).ready(function () {
+
 $('#stock_options_db')[0].value="none"
 $('#show-chart').click(function(){
    data = {'stock' : $( "#stock_options_db option:selected")[0].value};
@@ -21,8 +29,8 @@ $('#show-chart').click(function(){
           alert("Oops! an error occurred. please try again.");
       },
       success: function(data, textStatus, jqXHR) {
-   
-        new Highcharts.Chart({
+        console.log(data);
+        chart1 = new Highcharts.Chart({
         chart: {
                 renderTo: "#container"
         },
@@ -35,7 +43,7 @@ $('#show-chart').click(function(){
             x: -20
         },
         xAxis: {
-            categories: data["data"]["dates"]
+            categories: data["data"]["dates"],
         },
         yAxis: {
             title: {
@@ -67,6 +75,32 @@ $('#show-chart').click(function(){
 
 });
 
+$('#add-info').click(function(){
+  console.log(chart1);
+  data = {'stock' : $( "#stock_options_db option:selected")[0].value};
+  $.ajax({
+      url: "/stocks/add_dummy_stock_item",
+      type: "POST",
+      data: data,
+      error: function(response){
+          alert("Oops! an error occurred. please try again.");
+      },
+      success: function(data, textStatus, jqXHR) {
+        console.log(data);
+        if (data["data"]["success"] == true){
+          chart1.series[0].addPoint([data["data"]["date"],data["data"]["open_price"]]);
+          chart1.series[1].addPoint([data["data"]["date"],data["data"]["close_price"]]);
+          chart1.redraw();
+        }else{
+          alert(data["data"]["messages"]);
+        }
+      }
+  });
+
+});
+
+
+});
  </script>
 
  <div id="#container" style="width:560px;height:300px"></div>
